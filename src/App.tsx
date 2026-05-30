@@ -16,6 +16,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import Navbar from './components/Navbar';
+import heroVivek from './assets/hero-vivek.png';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -92,12 +93,14 @@ const education = [
 function useLenis() {
   useEffect(() => {
     const lenis = new Lenis({ lerp: 0.075, wheelMultiplier: 0.9, smoothWheel: true });
+    (window as any).lenis = lenis;
     const update = (time: number) => lenis.raf(time * 1000);
     gsap.ticker.add(update);
     gsap.ticker.lagSmoothing(0);
     return () => {
       gsap.ticker.remove(update);
       lenis.destroy();
+      (window as any).lenis = undefined;
     };
   }, []);
 }
@@ -195,27 +198,30 @@ function Hero() {
     <section
       id="home"
       className="hero-poster"
-      data-section-theme="#090909"
+      data-section-theme="#0b0b0b"
       onMouseMove={(event) => {
         mx.set((event.clientX / window.innerWidth - 0.5) * 18);
         my.set((event.clientY / window.innerHeight - 0.5) * 18);
       }}
     >
-      <motion.div
-        className="hero-portrait-glow"
-        style={{ x: springX, y: springY }}
-      />
-      <div className="hero-grid" />
+      {/* Cinematic orb */}
+      <motion.div className="hero-orb" animate={{ x: [0, 20, 0] }} transition={{ duration: 40, ease: 'easeInOut', repeat: Infinity }} />
+      {/* Light rays */}
+      <div className="hero-rays" aria-hidden="true" />
+      {/* Film grain / noise */}
+      <div className="hero-grain" aria-hidden="true" />
+      {/* Vignette */}
+      <div className="hero-vignette" aria-hidden="true" />
 
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1480px] flex-col px-5 py-6 md:px-10">
-        <div className="grid flex-1 items-center gap-10 py-12 lg:grid-cols-[0.92fr_1.08fr] lg:gap-8">
-          <div className="max-w-2xl pt-8 lg:pt-0 hero-text-content">
-            <p className="mb-5 text-xs font-bold uppercase tracking-[0.48em] text-flare">Creative Developer</p>
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-5 py-6 md:px-10">
+        <div className="grid flex-1 items-center gap-0 pt-24 pb-12 lg:grid-cols-[0.45fr_0.55fr]">
+          <div className="max-w-2xl pt-16 lg:pt-0 hero-text-content">
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.48em] text-flare">Creative Developer</p>
             <h1 className="hero-title">
               Hi, I Am{' '}
-              <span className="vivek-text-animate">Vivek</span>
+              <span className="text-outline-animated">Vivek</span>
             </h1>
-            <p className="mt-7 max-w-xl text-lg leading-relaxed text-ash md:text-2xl">
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-neutral-300 md:text-xl font-medium tracking-wide">
               Full Stack Developer | AI Enthusiast | Vision Builder
             </p>
             <a className="hero-cta" href="#about">
@@ -223,20 +229,17 @@ function Hero() {
             </a>
           </div>
 
-          <motion.div className="hero-portrait-wrap" style={{ x: springX, y: springY }}>
-            <div className="hero-portrait-frame">
-              <div className="hero-portrait-placeholder">
-                <span className="text-[11px] font-bold uppercase tracking-[0.36em] text-ash">Portrait Image</span>
-                <strong>Drop image in assets</strong>
-              </div>
-            </div>
-            <div className="hero-side-caption">
-              <span>Available for meaningful builds</span>
-              <span className="relative h-12 w-[1px] overflow-hidden bg-white/20">
-                <span className="absolute left-0 top-0 h-4 w-[1px] animate-scrollPulse bg-flare" />
-              </span>
-            </div>
-          </motion.div>
+          <div className="hero-portrait-wrap">
+            {/* Giant circular spotlight behind the character */}
+            <div className="hero-spotlight" aria-hidden="true" />
+            {/* Red ambient glow */}
+            <div className="hero-ambient" aria-hidden="true" />
+            <img
+              src={heroVivek}
+              alt="Vivek K K — Full Stack Developer & AI Enthusiast"
+              className="hero-portrait-img"
+            />
+          </div>
         </div>
       </div>
     </section>

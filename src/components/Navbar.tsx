@@ -62,14 +62,17 @@ export default function Navbar() {
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      (window as any).lenis?.stop();
       timelineRef.current?.play();
     } else {
       document.body.style.overflow = '';
+      (window as any).lenis?.start();
       timelineRef.current?.reverse();
     }
 
     return () => {
       document.body.style.overflow = '';
+      (window as any).lenis?.start();
     };
   }, [isOpen]);
 
@@ -84,13 +87,15 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 w-full h-[80px] z-50 flex items-center justify-between px-6 md:px-12 transition-all duration-500 ${
-          isScrolled ? 'navbar-glass' : 'bg-transparent'
+        className={`fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 md:px-12 pointer-events-none transition-all duration-500 ${
+          isScrolled ? 'h-[80px]' : 'h-[100px] pt-4'
         }`}
       >
         <a
           href="#home"
-          className="text-2xl font-bold tracking-widest uppercase text-[#F5F5F5] hover:text-[#D62828] transition-colors duration-300"
+          className={`pointer-events-auto text-2xl font-bold tracking-widest uppercase text-[#F5F5F5] hover:text-[#D62828] transition-all duration-500 ${
+            isScrolled ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
           aria-label="Vivek K home"
         >
           VIVEK K
@@ -98,12 +103,9 @@ export default function Navbar() {
 
         <button
           onClick={() => setIsOpen((prev) => !prev)}
-          className="menu-btn-glass flex items-center gap-2 rounded-full px-6 py-[14px] text-sm font-bold uppercase tracking-widest text-[#F5F5F5] group"
+          className="pointer-events-auto menu-btn-glass flex items-center justify-center rounded-full w-12 h-12 text-[#F5F5F5] group"
           aria-label={isOpen ? 'Close menu' : 'Open menu'}
         >
-          <span className="w-16 text-center transition-all duration-300">
-            {isOpen ? 'CLOSE' : 'MENU'}
-          </span>
           <div className="relative w-5 h-5 flex items-center justify-center">
             {isOpen ? (
               <X size={20} className="absolute text-flare transition-transform duration-300 rotate-90 scale-100" />

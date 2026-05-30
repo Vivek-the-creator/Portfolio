@@ -38,19 +38,19 @@ export default function StaggeredMenu({
   return (
     <aside
       id="cinematic-menu"
-      className="menu-panel-glow absolute right-0 top-0 h-full w-full max-w-[420px] flex flex-col justify-between p-10 md:p-14 z-50 transform translate-x-full shadow-[-20px_0_40px_rgba(0,0,0,0.5)] border-l border-white/5"
+      className="menu-panel-glow absolute right-0 top-0 h-full w-80 sm:w-96 flex flex-col justify-between pt-24 pb-12 pl-10 pr-6 md:pl-12 md:pr-8 z-50 shadow-[-20px_0_40px_rgba(0,0,0,0.5)] border-l border-white/5"
       ref={panelRef}
       aria-label="Primary navigation"
       onMouseDown={(event) => event.stopPropagation()}
     >
       <div className="menu-panel-gradient" />
 
-      <nav className="relative z-10 flex flex-col space-y-4 mt-20">
+      <nav className="relative z-10 flex flex-col items-start space-y-4 mt-12 w-full">
         {menuItems.map((item, index) => (
           <a
             key={item.href}
             href={item.href}
-            className="menu-item-link group flex items-baseline gap-4 relative py-2"
+            className="menu-item-link group flex items-baseline justify-start gap-2.5 relative py-2 w-full text-left"
             ref={(node) => {
               if (node) itemRefs.current[index] = node;
             }}
