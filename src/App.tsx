@@ -246,6 +246,82 @@ function Hero() {
   );
 }
 
+function TechnologyMattersSection() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  const lines = ['PASSIONATE', 'ABOUT CREATING', 'TECHNOLOGY', 'THAT MATTERS'];
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const ctx = gsap.context(() => {
+      const revealLines = gsap.utils.toArray<HTMLElement>('[data-tech-line]');
+      const closingLine = section.querySelector<HTMLElement>('[data-tech-closing]');
+
+      gsap.set(revealLines, {
+        backgroundPositionX: '100%',
+      });
+      gsap.set(closingLine, {
+        yPercent: 120,
+      });
+
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 65%',
+          end: 'bottom bottom',
+          scrub: true,
+        },
+      });
+
+      revealLines.forEach((line) => {
+        timeline.to(line, {
+          backgroundPositionX: '0%',
+          ease: 'none',
+          duration: 1,
+        });
+      });
+
+      timeline.to(closingLine, {
+        yPercent: 0,
+        ease: 'none',
+        duration: 0.8,
+      });
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
+  const textLayer = lines.map((line) => (
+    <span className="technology-matters-line" key={line}>
+      <span className="technology-matters-reveal-line" data-tech-line>
+        {line}
+      </span>
+    </span>
+  ));
+
+  return (
+    <section
+      ref={sectionRef}
+      className="technology-matters-section"
+      data-section-theme="#b80d0d"
+      aria-label="Passionate about creating technology that matters"
+    >
+      <div className="technology-matters-sticky">
+        <h2 className="technology-matters-title" aria-hidden="true">
+          {textLayer}
+        </h2>
+        <div className="technology-matters-closing-wrap" aria-hidden="true">
+          <p className="technology-matters-closing" data-tech-closing>
+            Engineering a better tomorrow
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function About() {
   return (
     <section id="about" className="section-grid bg-gradient-to-b from-void via-[#270505] to-blood" data-section-theme="#2b0505">
@@ -495,6 +571,7 @@ export default function App() {
       <div className="grain" />
       <Navbar />
       <Hero />
+      <TechnologyMattersSection />
       <About />
       <Experience />
       <Skills />

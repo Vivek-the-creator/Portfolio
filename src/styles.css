@@ -261,6 +261,89 @@ body {
   writing-mode: vertical-rl;
 }
 
+.technology-matters-section {
+  position: relative;
+  min-height: 138vh;
+  background: #b80d0d;
+  overflow: clip;
+}
+
+.technology-matters-sticky {
+  position: sticky;
+  top: 0;
+  display: grid;
+  min-height: 100vh;
+  align-items: center;
+  justify-items: center;
+  padding: clamp(1.25rem, 4vw, 4rem);
+}
+
+.technology-matters-title {
+  width: min(100%, 1500px);
+  margin-inline: auto;
+  font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(6rem, 10vw, 14rem);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.technology-matters-line {
+  display: block;
+  white-space: nowrap;
+}
+
+.technology-matters-reveal-line {
+  display: inline-block;
+  color: transparent;
+  background-image: linear-gradient(90deg, #ffffff 0%, #ffffff 50%, #2b2b2b 50%, #2b2b2b 100%);
+  background-size: 200% 100%;
+  background-position-x: 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  will-change: background-position;
+}
+
+.technology-matters-closing-wrap {
+  width: min(100%, 1500px);
+  margin-top: clamp(1.5rem, 4vw, 3.5rem);
+  margin-inline: auto;
+  text-align: left;
+  overflow: hidden;
+}
+
+.technology-matters-closing {
+  color: #111111;
+  font-size: clamp(1.6rem, 3.8vw, 4.35rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+@media (max-width: 767px) {
+  .technology-matters-sticky {
+    align-items: center;
+    justify-items: start;
+    padding-inline: 1rem;
+  }
+
+  .technology-matters-title {
+    width: 100%;
+    font-size: clamp(2.4rem, 11.5vw, 5.2rem);
+    line-height: 1.08;
+  }
+
+  .technology-matters-closing {
+    font-size: clamp(1rem, 5.6vw, 1.65rem);
+  }
+}
+
 .btn-primary,
 .btn-secondary {
   @apply inline-flex min-h-12 items-center gap-2 border px-5 text-sm font-bold uppercase tracking-[0.14em] transition-all duration-300;
