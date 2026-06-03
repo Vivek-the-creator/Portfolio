@@ -72,26 +72,7 @@ export default function StaggeredMenu({
         ))}
       </nav>
 
-      <div className="relative z-10 mt-12 border-t border-white/10 pt-8">
-        <p className="text-xs font-bold uppercase tracking-[0.4em] text-flare mb-6">Connect</p>
-        <div className="grid grid-cols-2 gap-4">
-          {socialLinks.map((item, index) => (
-            <a
-              key={item.label}
-              href={item.href}
-              target={item.href.startsWith('http') ? '_blank' : undefined}
-              rel={item.href.startsWith('http') ? 'noreferrer' : undefined}
-              className="flex items-center gap-2 text-sm text-ash hover:text-flare transition-colors group"
-              ref={(node) => {
-                if (node) socialRefs.current[index] = node;
-              }}
-            >
-              <item.icon size={16} className="group-hover:scale-110 transition-transform" />
-              {item.label}
-            </a>
-          ))}
-        </div>
-      </div>
+      <div className="relative z-10 mt-6 border-t border-white/10" />
     </aside>
   );
 }

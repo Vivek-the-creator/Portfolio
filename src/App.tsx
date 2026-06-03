@@ -6,7 +6,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
   ArrowDown,
   ArrowUpRight,
-  Code2,
   Download,
   Github,
   Linkedin,
@@ -17,15 +16,18 @@ import {
 } from 'lucide-react';
 import Navbar from './components/Navbar';
 import heroVivek from './assets/hero-vivek.png';
+import aboutLargeLeft from './assets/Large_Left.jpg';
+import aboutTopRight from './assets/Top_Right.jpg';
+import aboutBottomRight from './assets/Bottom_Right.jpg';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const roles = ['Full Stack Developer', 'AI Enthusiast'];
 
-const aboutCards = [
-  'I am Vivek K K, a Computer Science Engineering (AI & ML) student at Sri Eshwar College of Engineering with a CGPA of 8.07.',
-  'I am passionate about Full Stack Development, Artificial Intelligence, UI/UX Design, and building products that solve real-world problems.',
-  'I enjoy transforming ideas into scalable applications and continuously learning new technologies through projects, hackathons, internships, and coding challenges.',
+const aboutImages = [
+  { src: aboutLargeLeft, alt: 'Large left portrait' },
+  { src: aboutTopRight, alt: 'Top right portrait' },
+  { src: aboutBottomRight, alt: 'Bottom right portrait' },
 ];
 
 const internships = [
@@ -213,6 +215,19 @@ function Hero() {
       {/* Vignette */}
       <div className="hero-vignette" aria-hidden="true" />
 
+      {/* Portrait — placed outside the max-w wrapper so right:0 = viewport edge */}
+      <div className="hero-portrait-wrap">
+        {/* Giant circular spotlight behind the character */}
+        <div className="hero-spotlight" aria-hidden="true" />
+        {/* Red ambient glow */}
+        <div className="hero-ambient" aria-hidden="true" />
+        <img
+          src={heroVivek}
+          alt="Vivek K K — Full Stack Developer & AI Enthusiast"
+          className="hero-portrait-img"
+        />
+      </div>
+
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[1600px] flex-col px-5 py-6 md:px-10">
         <div className="grid flex-1 items-center gap-0 pt-24 pb-12 lg:grid-cols-[0.45fr_0.55fr]">
           <div className="max-w-2xl pt-16 lg:pt-0 hero-text-content">
@@ -228,18 +243,6 @@ function Hero() {
               Find Out More <ArrowDown size={18} />
             </a>
           </div>
-
-          <div className="hero-portrait-wrap">
-            {/* Giant circular spotlight behind the character */}
-            <div className="hero-spotlight" aria-hidden="true" />
-            {/* Red ambient glow */}
-            <div className="hero-ambient" aria-hidden="true" />
-            <img
-              src={heroVivek}
-              alt="Vivek K K — Full Stack Developer & AI Enthusiast"
-              className="hero-portrait-img"
-            />
-          </div>
         </div>
       </div>
     </section>
@@ -249,7 +252,7 @@ function Hero() {
 function TechnologyMattersSection() {
   const sectionRef = useRef<HTMLElement>(null);
 
-  const lines = ['PASSIONATE', 'ABOUT CREATING', 'TECHNOLOGY', 'THAT MATTERS'];
+  const lines = ['', 'PASSIONATE', 'ABOUT CREATING', 'TECHNOLOGY', 'THAT MATTERS'];
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -293,11 +296,15 @@ function TechnologyMattersSection() {
     return () => ctx.revert();
   }, []);
 
-  const textLayer = lines.map((line) => (
-    <span className="technology-matters-line" key={line}>
-      <span className="technology-matters-reveal-line" data-tech-line>
-        {line}
-      </span>
+  const textLayer = lines.map((line, index) => (
+    <span className="technology-matters-line" key={index}>
+      {line ? (
+        <span className="technology-matters-reveal-line" data-tech-line>
+          {line}
+        </span>
+      ) : (
+        <span className="block h-[clamp(1.5rem,3vw,3rem)]" />
+      )}
     </span>
   ));
 
@@ -323,27 +330,130 @@ function TechnologyMattersSection() {
 }
 
 function About() {
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray<HTMLElement>('[data-about-card]');
+      const floats = gsap.utils.toArray<HTMLElement>('[data-about-float]');
+      const dots = gsap.utils.toArray<HTMLElement>('[data-about-dot]');
+      const copyItems = gsap.utils.toArray<HTMLElement>('[data-about-fade]');
+      const panScroll = {
+        trigger: section,
+        start: 'top 15%',
+        end: 'bottom 35%',
+        scrub: true,
+      };
+
+      gsap.set(floats, { yPercent: -40 });
+
+      gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+        },
+      }).to([section, document.body], {
+        keyframes: [
+          { backgroundColor: '#A00000', duration: 0.25 },
+          { backgroundColor: '#700000', duration: 0.25 },
+          { backgroundColor: '#450000', duration: 0.25 },
+          { backgroundColor: '#1A0000', duration: 0.25 },
+        ],
+        ease: 'none',
+      });
+
+      gsap.fromTo(
+        cards,
+        { autoAlpha: 0, y: 100 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 1.2,
+          ease: 'power3.out',
+          stagger: 0.14,
+          scrollTrigger: {
+            trigger: section,
+            start: 'top 72%',
+            once: true,
+          },
+        },
+      );
+
+      gsap.to(floats, {
+        yPercent: 0,
+        ease: 'none',
+        scrollTrigger: panScroll,
+      });
+
+      gsap.to(copyItems, {
+        autoAlpha: (index) => [0.92, 0.82, 0.58, 0.36, 0.22][index] ?? 0.22,
+        y: (index) => -10 * (index + 1),
+        ease: 'none',
+        stagger: 0.035,
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 12%',
+          end: 'bottom 58%',
+          scrub: true,
+        },
+      });
+
+      ScrollTrigger.create({
+        ...panScroll,
+        onUpdate: (self) => {
+          const activeIndex = Math.min(dots.length - 1, Math.floor(self.progress * dots.length));
+          dots.forEach((dot, dotIndex) => dot.classList.toggle('is-active', dotIndex === activeIndex));
+        },
+      });
+    }, section);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="about" className="section-grid bg-gradient-to-b from-void via-[#270505] to-blood" data-section-theme="#2b0505">
-      <div className="sticky-visual">
-        <div className="visual-orbit" data-reveal>
-          <div className="absolute inset-8 border border-flare/30" />
-          <div className="absolute left-8 top-8 h-24 w-24 border-l border-t border-flare" />
-          <div className="absolute bottom-8 right-8 h-24 w-24 border-b border-r border-flare" />
-          <Code2 className="relative z-10 h-24 w-24 text-flare" />
-          <p className="relative z-10 mt-8 max-w-xs text-center text-sm uppercase tracking-[0.36em] text-ash">
-            Ideas shaped into systems
-          </p>
+    <section ref={sectionRef} id="about" className="about-cinema-section" data-section-theme="#D10000">
+      <div className="about-cinema-grid">
+        <div className="about-cinema-gallery" aria-label="About Me visual gallery">
+          {aboutImages.map((image, index) => (
+            <figure className={`about-cinema-card about-cinema-card-${index + 1}`} data-about-card key={image.alt}>
+              <div className="about-cinema-float" data-about-float>
+                <img src={image.src} alt={image.alt} />
+              </div>
+            </figure>
+          ))}
         </div>
-      </div>
-      <div className="space-y-8">
-        <SectionTitle eyebrow="About Me" title="A story in motion" />
-        {aboutCards.map((text, index) => (
-          <article key={text} className="story-card" data-reveal>
-            <span className="text-sm font-bold text-flare">0{index + 1}</span>
-            <p>{text}</p>
+
+        <div className="about-cinema-copy-wrap">
+          <div className="about-cinema-dots" aria-label="Gallery scroll progress">
+            {aboutImages.map((image, index) => (
+              <span className={index === 0 ? 'is-active' : undefined} data-about-dot key={image.alt} />
+            ))}
+          </div>
+
+          <article className="about-cinema-copy">
+            <p className="about-cinema-eyebrow" data-about-fade>About Me</p>
+            
+            <p data-about-fade>
+              I am Vivek K K, a Computer Science Engineering student specializing in AI and ML, drawn to the space where clean interfaces, reliable systems, and intelligent tools meet.
+            </p>
+            <p data-about-fade>
+              My work is shaped by projects, hackathons, internships, and constant experimentation. I like building products that feel useful, precise, and alive enough to solve real problems.
+            </p>
+            <p data-about-fade>
+              For me, technology matters when it carries intention: helping people understand, communicate, decide, heal, or create with more confidence.
+            </p>
+            <div className="about-cinema-pill-row">
+              <span>Skills</span>
+              <span>Experience</span>
+              <span>Achievements</span>
+            </div>
           </article>
-        ))}
+        </div>
       </div>
     </section>
   );

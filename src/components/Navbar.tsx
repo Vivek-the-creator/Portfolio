@@ -9,11 +9,11 @@ export default function Navbar() {
 
   const overlayRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLElement>(null);
-  const layerRefs = useRef<HTMLDivElement[]>([]);
   const itemRefs = useRef<HTMLAnchorElement[]>([]);
   const numberRefs = useRef<HTMLSpanElement[]>([]);
   const socialRefs = useRef<HTMLAnchorElement[]>([]);
-  const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const openTlRef = useRef<gsap.core.Timeline | null>(null);
+  const closeTlRef = useRef<gsap.core.Timeline | null>(null);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 24);
@@ -25,35 +25,30 @@ export default function Navbar() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       gsap.set(overlayRef.current, { autoAlpha: 0, pointerEvents: 'none' });
-      gsap.set(layerRefs.current, { xPercent: 100 });
       gsap.set(panelRef.current, { xPercent: 100 });
       gsap.set([...itemRefs.current, ...numberRefs.current, ...socialRefs.current], {
         y: 36,
         opacity: 0,
       });
 
-      timelineRef.current = gsap
+      openTlRef.current = gsap
         .timeline({
           paused: true,
           defaults: { ease: 'power4.inOut' },
-          onReverseComplete: () => {
-            gsap.set(overlayRef.current, { pointerEvents: 'none' });
-          },
         })
         .to(overlayRef.current, { autoAlpha: 1, pointerEvents: 'auto', duration: 0.32, ease: 'power2.out' }, 0)
-        .to(layerRefs.current, { xPercent: 0, duration: 0.72, stagger: 0.08 }, 0.04)
-        .to(panelRef.current, { xPercent: 0, duration: 0.82 }, 0.22)
+        .to(panelRef.current, { xPercent: 0, duration: 0.82 }, 0.08)
         .to(
           numberRefs.current,
           { y: 0, opacity: 0.6, duration: 0.54, stagger: 0.045, ease: 'power3.out' },
-          0.64
+          0.52
         )
         .to(
           itemRefs.current,
           { y: 0, opacity: 1, duration: 0.72, stagger: 0.045, ease: 'power3.out' },
-          0.68
+          0.56
         )
-        .to(socialRefs.current, { y: 0, opacity: 1, duration: 0.48, stagger: 0.06, ease: 'power3.out' }, 0.96);
+        .to(socialRefs.current, { y: 0, opacity: 1, duration: 0.48, stagger: 0.06, ease: 'power3.out' }, 0.84);
     });
 
     return () => ctx.revert();
@@ -61,13 +56,56 @@ export default function Navbar() {
 
   useEffect(() => {
     if (isOpen) {
+      // Kill any running close animation
+      closeTlRef.current?.kill();
+      closeTlRef.current = null;
+
       document.body.style.overflow = 'hidden';
       (window as any).lenis?.stop();
-      timelineRef.current?.play();
+
+      // Reset to open-ready state and play
+      gsap.set(panelRef.current, { xPercent: 100 });
+      gsap.set([...itemRefs.current, ...numberRefs.current, ...socialRefs.current], {
+        y: 36,
+        opacity: 0,
+      });
+      openTlRef.current?.progress(0).play();
     } else {
       document.body.style.overflow = '';
       (window as any).lenis?.start();
-      timelineRef.current?.reverse();
+
+      // Only run close animation if the menu was actually open
+      if (openTlRef.current && openTlRef.current.progress() > 0) {
+        openTlRef.current.pause();
+
+        closeTlRef.current = gsap
+          .timeline({
+            defaults: { ease: 'power3.inOut' },
+            onComplete: () => {
+              // Reset everything for the next open
+              gsap.set(overlayRef.current, { autoAlpha: 0, pointerEvents: 'none' });
+              gsap.set(panelRef.current, { xPercent: 100 });
+              gsap.set([...itemRefs.current, ...numberRefs.current, ...socialRefs.current], {
+                y: 36,
+                opacity: 0,
+              });
+              openTlRef.current?.progress(0).pause();
+              closeTlRef.current = null;
+            },
+          })
+          .to(
+            [...socialRefs.current, ...numberRefs.current],
+            { y: -16, opacity: 0, duration: 0.22, stagger: 0.02, ease: 'power2.in' },
+            0
+          )
+          .to(
+            itemRefs.current,
+            { y: -24, opacity: 0, duration: 0.28, stagger: 0.025, ease: 'power2.in' },
+            0.04
+          )
+          .to(panelRef.current, { xPercent: -100, duration: 0.55, ease: 'power3.inOut' }, 0.18)
+          .to(overlayRef.current, { autoAlpha: 0, duration: 0.38, ease: 'power2.in' }, 0.32);
+      }
     }
 
     return () => {
@@ -120,7 +158,6 @@ export default function Navbar() {
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         overlayRef={overlayRef}
-        layerRefs={layerRefs}
         panelRef={panelRef}
         itemRefs={itemRefs}
         numberRefs={numberRefs}
