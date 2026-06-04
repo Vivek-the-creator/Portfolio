@@ -341,14 +341,40 @@ function About() {
       const floats = gsap.utils.toArray<HTMLElement>('[data-about-float]');
       const dots = gsap.utils.toArray<HTMLElement>('[data-about-dot]');
       const copyItems = gsap.utils.toArray<HTMLElement>('[data-about-fade]');
+
+      // ── Card-1 (Large Left): .image-pan wrapper pan ─────────────
+      // The .image-pan wrapper is 135% tall inside .about-cinema-float
+      // (which has overflow:hidden). The img inside is 100/100 — perfect fit.
+      // yPercent: 35  → wrapper pushed DOWN → lower body visible at start.
+      // yPercent: 0   → wrapper at natural top → upper body / face visible.
+      const largePan = section.querySelector<HTMLElement>('[data-large-pan]');
+
+      // ── Cards 2 & 3: float wrapper pan ─────────────────────────
+      const smallFloats = floats.filter((_, i) => i !== 0);
+
       const panScroll = {
         trigger: section,
-        start: 'top 15%',
-        end: 'bottom 35%',
+        start: 'top 80%',
+        end: 'bottom center',
         scrub: true,
       };
 
-      gsap.set(floats, { yPercent: -40 });
+      if (largePan) {
+        gsap.set(largePan, { yPercent: -35 }); // pushed up → bottom of image (legs) visible
+        gsap.to(largePan, {
+          yPercent: 0,  // slides DOWN → upper body / face revealed
+          ease: 'none',
+          scrollTrigger: panScroll,
+        });
+      }
+
+      // Cards 2 & 3: standard float wrapper pan
+      gsap.set(smallFloats, { yPercent: -40 });
+      gsap.to(smallFloats, {
+        yPercent: 0,
+        ease: 'none',
+        scrollTrigger: panScroll,
+      });
 
       gsap.timeline({
         scrollTrigger: {
@@ -384,11 +410,7 @@ function About() {
         },
       );
 
-      gsap.to(floats, {
-        yPercent: 0,
-        ease: 'none',
-        scrollTrigger: panScroll,
-      });
+      // (card-1 and small floats handled above)
 
       gsap.to(copyItems, {
         autoAlpha: (index) => [0.92, 0.82, 0.58, 0.36, 0.22][index] ?? 0.22,
@@ -422,7 +444,13 @@ function About() {
           {aboutImages.map((image, index) => (
             <figure className={`about-cinema-card about-cinema-card-${index + 1}`} data-about-card key={image.alt}>
               <div className="about-cinema-float" data-about-float>
-                <img src={image.src} alt={image.alt} />
+                {index === 0 ? (
+                  <div className="image-pan" data-large-pan>
+                    <img src={image.src} alt={image.alt} />
+                  </div>
+                ) : (
+                  <img src={image.src} alt={image.alt} />
+                )}
               </div>
             </figure>
           ))}

@@ -448,17 +448,52 @@ body {
   will-change: transform;
 }
 
+/* Cards 2 & 3: standard cover fill, pan the wrapper upward */
 .about-cinema-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
+  object-position: center top;
   display: block;
-  transition: transform 0.5s ease;
 }
 
-.about-cinema-card:hover img {
-  transform: scale(1.03);
+/* ── Large Left card (card-1): wrapper-based masked pan ──────────
+   The .about-cinema-float is the overflow:hidden mask — same size as card.
+   .image-pan sits inside it, anchored top:0, with 35% extra height
+   added to the BOTTOM. The extra hangs below the card and is always
+   hidden by the parent overflow:hidden — invisible at every zoom level.
+
+   GSAP animation:
+     from yPercent: 0   → top of image (head) visible at top of frame
+     to   yPercent: -35 → wrapper moves UP → lower body/legs revealed
+
+   The image itself: 100% × 100% perfect fit inside .image-pan.        */
+.about-cinema-card-1 .about-cinema-float {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;   /* clips the bottom extension — always */
+  will-change: transform;
+}
+
+/* Pan wrapper — extension is at the bottom (top:0 anchor).
+   The extra 35% hangs below the card frame, never visible.          */
+.about-cinema-card-1 .image-pan {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 135%;       /* 100% frame + 35% hidden below */
+  will-change: transform;
+}
+
+/* Image: perfect fit — do NOT modify */
+.about-cinema-card-1 img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
 }
 
 .about-cinema-copy-wrap {
@@ -1010,3 +1045,7 @@ body {
   will-change: background-position;
   transform: translate3d(0, 0, 0);
 }
+
+/* ════════════════════════════════════════════════════════════════
+   END OF STYLES
+   ════════════════════════════════════════════════════════════════ */
