@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import Lenis from 'lenis';
-import { motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import {
@@ -15,6 +15,7 @@ import {
   Trophy,
 } from 'lucide-react';
 import Navbar from './components/Navbar';
+import SkillGalaxy3D from './components/SkillGalaxy3D';
 import heroVivek from './assets/hero-vivek.png';
 import aboutLargeLeft from './assets/Large_Left.jpg';
 import aboutTopRight from './assets/Top_Right.jpg';
@@ -215,7 +216,7 @@ function Hero() {
       {/* Vignette */}
       <div className="hero-vignette" aria-hidden="true" />
 
-      {/* Portrait — placed outside the max-w wrapper so right:0 = viewport edge */}
+      {/* Portrait â€” placed outside the max-w wrapper so right:0 = viewport edge */}
       <div className="hero-portrait-wrap">
         {/* Giant circular spotlight behind the character */}
         <div className="hero-spotlight" aria-hidden="true" />
@@ -223,7 +224,7 @@ function Hero() {
         <div className="hero-ambient" aria-hidden="true" />
         <img
           src={heroVivek}
-          alt="Vivek K K — Full Stack Developer & AI Enthusiast"
+          alt="Vivek K K â€” Full Stack Developer & AI Enthusiast"
           className="hero-portrait-img"
         />
       </div>
@@ -342,14 +343,14 @@ function About() {
       const dots = gsap.utils.toArray<HTMLElement>('[data-about-dot]');
       const copyItems = gsap.utils.toArray<HTMLElement>('[data-about-fade]');
 
-      // ── Card-1 (Large Left): .image-pan wrapper pan ─────────────
+      // â”€â”€ Card-1 (Large Left): .image-pan wrapper pan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       // The .image-pan wrapper is 135% tall inside .about-cinema-float
-      // (which has overflow:hidden). The img inside is 100/100 — perfect fit.
-      // yPercent: 35  → wrapper pushed DOWN → lower body visible at start.
-      // yPercent: 0   → wrapper at natural top → upper body / face visible.
+      // (which has overflow:hidden). The img inside is 100/100 â€” perfect fit.
+      // yPercent: 35  â†’ wrapper pushed DOWN â†’ lower body visible at start.
+      // yPercent: 0   â†’ wrapper at natural top â†’ upper body / face visible.
       const largePan = section.querySelector<HTMLElement>('[data-large-pan]');
 
-      // ── Cards 2 & 3: float wrapper pan ─────────────────────────
+      // â”€â”€ Cards 2 & 3: float wrapper pan â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const smallFloats = floats.filter((_, i) => i !== 0);
 
       const panScroll = {
@@ -360,9 +361,9 @@ function About() {
       };
 
       if (largePan) {
-        gsap.set(largePan, { yPercent: -35 }); // pushed up → bottom of image (legs) visible
+        gsap.set(largePan, { yPercent: -35 }); // pushed up â†’ bottom of image (legs) visible
         gsap.to(largePan, {
-          yPercent: 0,  // slides DOWN → upper body / face revealed
+          yPercent: 0,  // slides DOWN â†’ upper body / face revealed
           ease: 'none',
           scrollTrigger: panScroll,
         });
@@ -500,34 +501,6 @@ function Experience() {
             <h3 className="mt-4 font-display text-4xl uppercase text-bone">{item.company}</h3>
             <p className="mt-2 text-lg text-ash">{item.role}</p>
           </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function Skills() {
-  return (
-    <section id="skills" className="section-shell bg-gradient-to-b from-void via-[#250404] to-blood" data-section-theme="#4a0606">
-      <SectionTitle eyebrow="Skills" title="Tools with pulse" />
-      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-5">
-        {skillGroups.map((group, index) => (
-          <motion.article
-            key={group.title}
-            className="skill-card"
-            data-reveal
-            whileHover={{ y: -14, rotate: index % 2 ? 1.5 : -1.5 }}
-            transition={{ type: 'spring', stiffness: 260, damping: 18 }}
-          >
-            <h3>{group.title}</h3>
-            <div className="mt-8 flex flex-wrap gap-2">
-              {group.skills.map((skill) => (
-                <span key={skill} className="skill-pill">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </motion.article>
         ))}
       </div>
     </section>
@@ -711,8 +684,8 @@ export default function App() {
       <Hero />
       <TechnologyMattersSection />
       <About />
+      <SkillGalaxy3D />
       <Experience />
-      <Skills />
       <Projects />
       <Achievements />
       <CodingProfiles />
