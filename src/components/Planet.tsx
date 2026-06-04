@@ -60,10 +60,9 @@ export default function Planet({ icon, name, radius, speed, angle }: Props) {
     const isMobile = size.width < 768;
     const centerPlanetRadius = isMobile ? 80 : 110;
 
-    // Check orbit angle depth
-    const angleDeg = (t * 180) / Math.PI;
-    const normalized = ((angleDeg % 360) + 360) % 360;
-    const isBack = normalized > 90 && normalized < 270;
+    // The center planet is at Z = -1.2.
+    // The icon is on the back side of the orbit relative to the center planet if pz < -1.2.
+    const isBack = pz < -1.2;
 
     // Overlaps center
     const overlapsCenter = distance < centerPlanetRadius * 0.95;

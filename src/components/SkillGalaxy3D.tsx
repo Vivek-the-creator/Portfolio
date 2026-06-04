@@ -1,10 +1,29 @@
-import { useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { useState, useEffect } from 'react';
+import { Canvas, useThree } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import OrbitRing from './OrbitRing';
 import Planet from './Planet';
 import { skills, showcaseSkills } from './SkillData';
+
+function ResponsiveCamera() {
+  const { camera, size } = useThree();
+
+  useEffect(() => {
+    const aspect = size.width / size.height;
+    // On wide viewports, use a closer base Z to make the galaxy look larger and fill the screen.
+    // On narrower viewports (aspect < 1.35), dynamically scale the Z/Y out to prevent horizontal clipping.
+    const baseZ = 15.5;
+    const requiredZ = aspect < 1.35 ? Math.max(baseZ, 20.0 / aspect) : baseZ;
+    const requiredY = (requiredZ / 15.5) * 6.9; // Maintain same tilt ratio
+
+    camera.position.set(0, requiredY, requiredZ);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }, [size.width, size.height, camera]);
+
+  return null;
+}
 
 // Orbit ring config: radius on XZ plane, Z offset for depth layering
 const rings = [
@@ -49,6 +68,7 @@ export default function SkillGalaxy3D() {
                 camera={{ position: [0, 8, 18], fov: 45 }}
                 style={{ background: 'transparent', zIndex: 1 }}
               >
+                <ResponsiveCamera />
                 {/* Lighting — warm red palette */}
                 <ambientLight intensity={0.35} />
                 <pointLight
