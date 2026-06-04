@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800;900&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -1061,19 +1061,121 @@ body {
   position: relative;
   width: 100%;
   padding: clamp(4rem, 7vw, 8rem) clamp(1.25rem, 4vw, 4rem);
-  background: linear-gradient(to bottom, #1a0000 0%, #0a0000 30%, #030303 60%, #000 100%);
-  background-image:
-    linear-gradient(to bottom, #1a0000 0%, #0a0000 30%, #030303 60%, #000 100%),
-    url('./assets/noise.webp');
-  background-blend-mode: normal, overlay;
-  background-size: auto, 200px 200px;
+
+  /*
+   * Strategy: dead-flat base so there is literally nothing for the eye
+   * to latch onto as a "band". Every colour comes from blurred
+   * pseudo-elements that live ABOVE this layer. Noise sits on top of
+   * everything else as a micro-texture via mix-blend-mode overlay.
+   */
+  background-color: #000;
   overflow: hidden;
+  isolation: isolate; /* own stacking context — keeps blends contained */
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   LAYER 1  ::before  — the primary volumetric light mass
+   Large, heavily blurred radial orbs placed organically.
+   Nothing is rectangular. Nothing shares an edge.
+   blur(120px) turns every hard stop into a 120 px feather zone.
+   ───────────────────────────────────────────────────────────────── */
+.galaxy-section::before {
+  content: "";
+  position: absolute;
+  /* Extend 25% beyond the box on every side so blurred edges never
+     reach the section boundary and produce a visible dark frame.    */
+  inset: -25%;
+  width: 150%;
+  height: 150%;
+  pointer-events: none;
+  z-index: 1;
+
+  background:
+    /* A — deep maroon anchor at very top-center: bridges from About */
+    radial-gradient(ellipse 80% 40% at 50% -5%,
+      rgba(45, 0, 0, 0.95) 0%,
+      rgba(30, 0, 0, 0.60) 40%,
+      transparent 70%
+    ),
+    /* B — primary crimson bloom, center-upper: the "sun" of the scene */
+    radial-gradient(ellipse 65% 55% at 50% 22%,
+      rgba(110, 4, 4, 0.70) 0%,
+      rgba(70, 2, 2, 0.40) 35%,
+      rgba(35, 1, 1, 0.15) 60%,
+      transparent 80%
+    ),
+    /* C — secondary warm orb, offset left: breaks symmetry, feels natural */
+    radial-gradient(ellipse 55% 45% at 22% 35%,
+      rgba(80, 3, 3, 0.45) 0%,
+      rgba(45, 1, 1, 0.20) 45%,
+      transparent 70%
+    ),
+    /* D — counter-orb right: balances C, prevents left-heavy look */
+    radial-gradient(ellipse 50% 40% at 78% 30%,
+      rgba(65, 2, 2, 0.35) 0%,
+      rgba(35, 1, 1, 0.15) 45%,
+      transparent 70%
+    ),
+    /* E — deep mid anchor: pulls warmth down through center */
+    radial-gradient(ellipse 60% 50% at 50% 55%,
+      rgba(40, 1, 1, 0.30) 0%,
+      rgba(20, 0, 0, 0.15) 50%,
+      transparent 75%
+    ),
+    /* F — absolute base fill: dark maroon → black, zero hard edges */
+    radial-gradient(ellipse 120% 100% at 50% 0%,
+      rgba(25, 0, 0, 0.80) 0%,
+      rgba(10, 0, 0, 0.60) 30%,
+      rgba(4, 0, 0, 0.40) 55%,
+      rgba(1, 0, 0, 0.15) 75%,
+      transparent 100%
+    );
+
+  /* The single magic ingredient: genuine gaussian blur.
+     This is what blends the orb edges into each other and the
+     base — no CSS trick replicates this effect as well.          */
+  filter: blur(90px);
+  will-change: transform; /* own GPU layer — avoids repaint */
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   LAYER 2  ::after  — edge vignette + noise skin
+   Sits above the blurred orbs. Darkens all four edges so the
+   section never has a bright rim. Noise gives micro-texture.
+   ───────────────────────────────────────────────────────────────── */
+.galaxy-section::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+
+  background:
+    /* Noise micro-texture */
+    url('./assets/noise.webp'),
+    /* Edge vignette — radial from center, so all four sides darken equally */
+    radial-gradient(ellipse 85% 75% at 50% 28%,
+      transparent 25%,
+      rgba(0, 0, 0, 0.25) 55%,
+      rgba(0, 0, 0, 0.55) 75%,
+      rgba(0, 0, 0, 0.80) 100%
+    ),
+    /* Hard bottom seal: last 15% goes to pure black with no gap */
+    linear-gradient(to bottom,
+      transparent 85%,
+      rgba(0, 0, 0, 0.70) 93%,
+      #000 100%
+    );
+
+  background-size: 200px 200px, auto, auto;
+  background-blend-mode: overlay, normal, normal;
+  mix-blend-mode: normal;
 }
 
 /* ── Section header ──────────────────────────────────────────── */
 .galaxy-header {
   position: relative;
-  z-index: 2;
+  z-index: 3; /* above both pseudo-element layers */
   text-align: center;
   margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
 }
@@ -1107,6 +1209,7 @@ body {
   overflow: hidden;
   background: transparent;
   border: none;
+  z-index: 3;
 }
 
 /* ── Canvas wrapper ──────────────────────────────────────────── */

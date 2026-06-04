@@ -40,7 +40,7 @@ export default function SkillGalaxy3D() {
     <section
       id="skills"
       className="galaxy-section"
-      data-section-theme="#090909"
+      data-section-theme="#2d0000"
     >
       {/* Section header — always visible */}
       <div className="galaxy-header">
